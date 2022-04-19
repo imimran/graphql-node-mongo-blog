@@ -3,6 +3,7 @@ const {model, Schema} = require('mongoose')
 const postSchema = new Schema({
     body: String,
     username: String,
+    createAt: String,
     comments : [
         {
             body: String,
@@ -23,7 +24,7 @@ const postSchema = new Schema({
         ref: 'users'
     }
     
-}, {timestamps: true})
+})
 
 const Post = model('Post', postSchema)
 

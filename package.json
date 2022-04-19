@@ -5,13 +5,14 @@
   "repository": "https://github.com/imimran/graphql-social-app.git",
   "author": "imimran <engr.aih@gmail.com>",
   "license": "MIT",
-
   "scripts": {
     "dev": "nodemon index.js"
   },
   "dependencies": {
     "apollo-server": "^3.6.7",
+    "bcryptjs": "^2.4.3",
     "graphql": "^16.3.0",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.3.0"
   }
 }
