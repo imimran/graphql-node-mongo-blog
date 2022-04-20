@@ -5,7 +5,7 @@ module.exports = gql`
         id: ID!
         body: String!
         username: String!
-
+        createdAt: String!
     }
     type User {
         id: ID!
@@ -23,6 +23,7 @@ module.exports = gql`
     }
     type Query{
         getPosts: [Post]
+        viewPost(postId: ID!) : Post
     }
 
     type Mutation{
