@@ -1,10 +1,51 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../../models/User");
 const {UserInputError} = require('apollo-server')
-const {validateRegisterInput} = require('../../utils/validators')
+
+const User = require("../../models/User");
+const {validateRegisterInput, validateLoginInput} = require('../../utils/validators')
+
+const generateToken = (user) => {
+  return jwt.sign({
+    id: user.id,
+    email: user.email,
+    username: user.username
+}, "SCREAT_KEY", {expiresIn: '1d'})
+}
+
 module.exports = {
   Mutation: {
+
+    async login(_, {email, password}){
+      const {errors, valid} = validateLoginInput(email, password)
+      
+      if(!valid){
+        throw new UserInputError("Error", { errors})
+    }
+
+      const foundUser = await User.findOne({ email})
+
+      if(!foundUser){
+        errors.general = "User Not Found"
+        throw new UserInputError("User Not Found", { errors})
+      }
+
+      const match = await bcrypt.compare(password, foundUser.password)
+
+      if(!match){
+        errors.general = "Email or Password wrong"
+        throw new UserInputError("User or Password wrong", { errors})
+      }
+
+      const token = generateToken(foundUser)
+      
+      return {
+        ...foundUser._doc,
+        id: foundUser._id,
+        token 
+    }
+
+    },
     //parent, args, context, info
     async register(
       _,
@@ -40,11 +81,7 @@ module.exports = {
       });
       const res = await newUser.save()
 
-      const token = jwt.sign({
-          id: res.id,
-          email: res.email,
-          username: res.username
-      }, "SCREAT_KEY", {expiresIn: '1d'})
+      const token = generateToken(user)
       
       return {
           ...res._doc,
